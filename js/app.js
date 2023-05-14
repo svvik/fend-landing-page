@@ -24,7 +24,6 @@
  */
 
 const navbarList = document.getElementById('navbar__list');
-
 /**
  * End Global Variables
  * Start Helper Functions
@@ -51,6 +50,20 @@ function removeActiveClass(checkElms) {
   }
 }
 
+//This function is add style to element
+function addStyle(elem) {
+  elem.classList.add('onStyle');
+  elem.style.cssText = "background: #333; color: #fff;";
+}
+
+//This function removes style
+function removeStyle(elems) {
+  for (const elem of elems) {
+    elem.classList.remove('onStyle');
+    elem.style.cssText = '';
+  }
+}
+
 /**
  * End Helper Functions
  * Begin Main Functions
@@ -72,7 +85,7 @@ function buildNav() {
     const newElementLi = document.createElement('li');
     const anchorAttr = section.id;
     const linkName = section.getAttribute('data-nav');
-    const htmlText = `<a href="#${anchorAttr}" class="menu__link">${linkName}</a>`;
+    const htmlText = `<a href="#${anchorAttr}" class="menu__link ${anchorAttr}">${linkName}</a>`;
     newElementLi.insertAdjacentHTML('afterbegin', htmlText);
     navbarList.appendChild(newElementLi);
   }
@@ -80,7 +93,7 @@ function buildNav() {
 
 // Add class 'active' to section when near top of a viewport
 function addActiveClass(checkElem) {
-  checkElem.classList.add("active");
+  checkElem.classList.add('active');
 }
 
 // Scroll to anchor ID using scrollTO event
@@ -88,10 +101,13 @@ function scrollSection() {
   const navLinks = document.getElementsByClassName('menu__link');
   for (const navLink of navLinks) {
     navLink.addEventListener('click', (event) => {
+      const currentStyles = document.getElementsByClassName('onStyle');
+      removeStyle(currentStyles);
       event.preventDefault();
       const sectionId = navLink.getAttribute('href');
       const placeToScroll = document.querySelector(sectionId);
       placeToScroll.scrollIntoView({ behavior: "smooth" });
+      addStyle(navLink);
     });
   }
 }
@@ -106,10 +122,16 @@ function scrollSection() {
 document.addEventListener('scroll', () => {
   const sections = document.getElementsByTagName('section');
   let currentActive = document.getElementsByClassName('active');
+  let currentStyle = document.getElementsByClassName('onStyle');
   removeActiveClass(currentActive);
+  removeStyle(currentStyle);
   for (const section of sections) {
     if (isInViewport(section)) {
       addActiveClass(section);
+      const elems = document.getElementsByClassName(section.id);
+      for (const elem of elems) {
+        addStyle(elem);
+      }
       break;
     }
   }
